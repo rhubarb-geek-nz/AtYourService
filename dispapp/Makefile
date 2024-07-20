@@ -16,7 +16,7 @@ $(BINDIR)\$(APPNAME).exe: $(OBJDIR)\$(APPNAME).obj $(OBJDIR)\$(APPNAME).res $(BI
 	if not "$(CertificateThumbprint)"=="" signtool sign /a /sha1 $(CertificateThumbprint) /fd SHA256 /t http://timestamp.digicert.com $@
 
 $(OBJDIR)\$(APPNAME).obj: $(APPNAME).cpp $(OBJDIR)
-	cl /c /Fo$@ $(APPNAME).cpp /I$(OBJDIR) /I..\dispsvc\$(OBJDIR) /DWIN32_LEAN_AND_MEAN
+	cl /c /Fo$@ $(APPNAME).cpp /DWIN32_LEAN_AND_MEAN
 
 $(OBJDIR)\$(APPNAME).res: $(APPNAME).rc
 	rc /r  $(RCFLAGS) /i $(OBJDIR) /fo$@ $(APPNAME).rc
