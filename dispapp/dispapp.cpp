@@ -40,9 +40,10 @@ int main(int argc, char** argv)
 					UINT argErr;
 					EXCEPINFO ex;
 					VARIANTARG arg;
+					int hint = argc > 1 ? atoi(argv[1]) : 1;
 
 					arg.vt = VT_I4;
-					arg.intVal = 1;
+					arg.intVal = hint;
 					params.cArgs = 1;
 					params.rgvarg = &arg;
 

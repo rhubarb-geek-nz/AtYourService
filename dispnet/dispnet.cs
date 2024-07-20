@@ -14,7 +14,9 @@ namespace dispnet
         {
             object helloWorld = Activator.CreateInstance(Type.GetTypeFromProgID("RhubarbGeekNz.AtYourService"));
 
-            object result = helloWorld.GetType().InvokeMember("GetMessage", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, helloWorld, new object[] { 1 });
+            int hint = args.Length == 0 ? 1 : Int32.Parse(args[0]);
+
+            object result = helloWorld.GetType().InvokeMember("GetMessage", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, helloWorld, new object[] { hint });
 
             Console.WriteLine($"{result}");
         }
