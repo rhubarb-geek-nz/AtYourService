@@ -145,43 +145,49 @@ static STDMETHODIMP CHelloWorld_IHelloWorld_GetMessage(IHelloWorld* pThis, int H
 	LPCOLESTR message = NULL;
 	OLECHAR buffer[256];
 	DWORD dw = (sizeof(buffer) / sizeof(buffer[0])) - 1;
+	HRESULT hr = CoImpersonateClient();
 
-	switch (Hint)
+	if (SUCCEEDED(hr))
 	{
-	case -1:
-		message = L"Goodbye, Cruel World";
-		break;
-
-	case 1:
-		message = L"Hello World";
-		break;
-
-	case 2:
-		if (GetUserNameW(buffer, &dw))
+		switch (Hint)
 		{
-			message = buffer;
+		case -1:
+			message = L"Goodbye, Cruel World";
+			break;
+
+		case 1:
+			message = L"Hello World";
+			break;
+
+		case 2:
+			if (GetUserNameW(buffer, &dw))
+			{
+				message = buffer;
+			}
+			break;
+
+		case 3:
+			if (GetComputerNameW(buffer, &dw))
+			{
+				message = buffer;
+			}
+			break;
+
+		case 4:
+			message = globalModuleFileName;
+			break;
+
+		case 5:
+			message = ServiceName;
+			break;
 		}
-		break;
 
-	case 3:
-		if (GetComputerNameW(buffer, &dw))
-		{
-			message = buffer;
-		}
-		break;
+		*lpMessage = message ? SysAllocString(message) : NULL;
 
-	case 4:
-		message = globalModuleFileName;
-		break;
-
-	case 5:
-		message = ServiceName;
-		break;
+		hr = message ? S_OK : S_FALSE;
 	}
 
-	*lpMessage = message ? SysAllocString(message) : NULL;
-
-	return message ? S_OK : S_FALSE;
+	return hr;
 }
 
 static IUnknownVtbl CHelloWorld_IUnknownVtbl =

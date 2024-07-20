@@ -12,65 +12,78 @@ int main(int argc, char** argv)
 
 	if (SUCCEEDED(hr))
 	{
-		BSTR app = SysAllocString(L"RhubarbGeekNz.AtYourService");
-		CLSID clsid;
-
-		hr = CLSIDFromProgID(app, &clsid);
-
-		SysFreeString(app);
+		hr = CoInitializeSecurity(NULL,
+			-1,
+			NULL,
+			NULL,
+			RPC_C_AUTHN_LEVEL_PKT,
+			RPC_C_IMP_LEVEL_IMPERSONATE,
+			NULL,
+			EOAC_NONE,
+			NULL);
 
 		if (SUCCEEDED(hr))
 		{
-			IDispatch* helloWorld = NULL;
+			BSTR app = SysAllocString(L"RhubarbGeekNz.AtYourService");
+			CLSID clsid;
 
-			hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&helloWorld);
+			hr = CLSIDFromProgID(app, &clsid);
+
+			SysFreeString(app);
 
 			if (SUCCEEDED(hr))
 			{
-				BSTR names[] = { SysAllocString(L"GetMessage") };
-				DISPID dispIds[sizeof(names) / sizeof(names[0])];
-				int namesCount = sizeof(names) / sizeof(names[0]);
+				IDispatch* helloWorld = NULL;
 
-				hr = helloWorld->GetIDsOfNames(IID_NULL, names, namesCount, LOCALE_USER_DEFAULT, dispIds);
+				hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IDispatch, (void**)&helloWorld);
 
 				if (SUCCEEDED(hr))
 				{
-					VARIANT result;
-					DISPPARAMS params = { 0,0,0,0 };
-					UINT argErr;
-					EXCEPINFO ex;
-					VARIANTARG arg;
-					int hint = argc > 1 ? atoi(argv[1]) : 1;
+					BSTR names[] = { SysAllocString(L"GetMessage") };
+					DISPID dispIds[sizeof(names) / sizeof(names[0])];
+					int namesCount = sizeof(names) / sizeof(names[0]);
 
-					arg.vt = VT_I4;
-					arg.intVal = hint;
-					params.cArgs = 1;
-					params.rgvarg = &arg;
+					hr = helloWorld->GetIDsOfNames(IID_NULL, names, namesCount, LOCALE_USER_DEFAULT, dispIds);
 
-					ZeroMemory(&ex, sizeof(ex));
-
-					VariantInit(&result);
-
-					hr = helloWorld->Invoke(dispIds[0], IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &params, &result, &ex, &argErr);
-
-					if (result.vt == VT_BSTR)
+					if (SUCCEEDED(hr))
 					{
-						printf("%S\n", result.bstrVal);
+						VARIANT result;
+						DISPPARAMS params = { 0,0,0,0 };
+						UINT argErr;
+						EXCEPINFO ex;
+						VARIANTARG arg;
+						int hint = argc > 1 ? atoi(argv[1]) : 1;
+
+						arg.vt = VT_I4;
+						arg.intVal = hint;
+						params.cArgs = 1;
+						params.rgvarg = &arg;
+
+						ZeroMemory(&ex, sizeof(ex));
+
+						VariantInit(&result);
+
+						hr = helloWorld->Invoke(dispIds[0], IID_NULL, LOCALE_USER_DEFAULT, DISPATCH_METHOD, &params, &result, &ex, &argErr);
+
+						if (result.vt == VT_BSTR)
+						{
+							printf("%S\n", result.bstrVal);
+						}
+
+						VariantClear(&result);
 					}
 
-					VariantClear(&result);
-				}
+					while (namesCount--)
+					{
+						SysFreeString(names[namesCount]);
+					}
 
-				while (namesCount--)
-				{
-					SysFreeString(names[namesCount]);
+					helloWorld->Release();
 				}
-
-				helloWorld->Release();
 			}
-		}
 
-		CoUninitialize();
+			CoUninitialize();
+		}
 	}
 
 	if (FAILED(hr))
