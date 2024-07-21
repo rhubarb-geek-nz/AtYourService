@@ -4,6 +4,8 @@
  ****/
 
 using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace RhubarbGeekNz.AtYourService
 {
@@ -11,11 +13,57 @@ namespace RhubarbGeekNz.AtYourService
     {
         static void Main(string[] args)
         {
+            CoInitializeSecurity(IntPtr.Zero, -1, IntPtr.Zero, IntPtr.Zero, RpcAuthnLevel.Pkt, RpcImpLevel.Impersonate, IntPtr.Zero, EoAuthnCap.None, IntPtr.Zero);
+
             IHelloWorld helloWorld = Activator.CreateInstance(Type.GetTypeFromProgID("RhubarbGeekNz.AtYourService")) as IHelloWorld;
 
-            string result = helloWorld.GetMessage(args.Length == 0 ? 1 : Int32.Parse(args[0]));
-
-            Console.WriteLine($"{result}");
+            foreach (int hint in args.Length == 0 ? new int[] { 1, 2, 3, 4, 5 } : args.Select(t => Int32.Parse(t)).ToArray())
+            {
+                string result = helloWorld.GetMessage(hint);
+                Console.WriteLine($"{hint} {result}");
+            }
         }
+
+        public enum RpcAuthnLevel
+        {
+            Default = 0,
+            None = 1,
+            Connect = 2,
+            Call = 3,
+            Pkt = 4,
+            PktIntegrity = 5,
+            PktPrivacy = 6
+        }
+
+        public enum RpcImpLevel
+        {
+            Default = 0,
+            Anonymous = 1,
+            Identify = 2,
+            Impersonate = 3,
+            Delegate = 4
+        }
+
+        public enum EoAuthnCap
+        {
+            None = 0x00,
+            MutualAuth = 0x01,
+            StaticCloaking = 0x20,
+            DynamicCloaking = 0x40,
+            AnyAuthority = 0x80,
+            MakeFullSIC = 0x100,
+            Default = 0x800,
+            SecureRefs = 0x02,
+            AccessControl = 0x04,
+            AppID = 0x08,
+            Dynamic = 0x10,
+            RequireFullSIC = 0x200,
+            AutoImpersonate = 0x400,
+            NoCustomMarshal = 0x2000,
+            DisableAAA = 0x1000
+        }
+
+        [DllImport("ole32.dll", PreserveSig = false)]
+        public static extern int CoInitializeSecurity(IntPtr pVoid, int cAuthSvc, IntPtr asAuthSvc, IntPtr pReserved1, RpcAuthnLevel level, RpcImpLevel impers, IntPtr pAuthList, EoAuthnCap dwCapabilities, IntPtr pReserved3);
     }
 }
