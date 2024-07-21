@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" Name="AtYourService ($(env.PRODUCTARCH))" Language="1033" Version="$(env.PRODUCTVERSION)" Manufacturer="rhubarb-geek-nz" UpgradeCode="$(env.UPGRADECODE)">
+  <Product Id="*" Name="rhubarb-geek-nz/AtYourService ($(env.PRODUCTARCH))" Language="1033" Version="$(env.PRODUCTVERSION)" Manufacturer="rhubarb-geek-nz" UpgradeCode="$(env.UPGRADECODE)">
     <Package InstallerVersion="$(env.INSTALLERVERSION)" Compressed="yes" InstallScope="perMachine" Platform="$(env.PRODUCTARCH)" Description="Dual-Interface Hello World Component" Comments="https://github.com/rhubarb-geek-nz/AtYourService" />
     <MediaTemplate EmbedCab="yes" />
     <Feature Id="ProductFeature" Title="setup" Level="1">
@@ -25,7 +25,11 @@
   <Fragment>
     <ComponentGroup Id="ProductComponents">
       <Component Id="cmp49644F99A8DC013BD2FA39270E26C76C" Guid="*" Directory="INSTALLDIR" Win64="$(env.PRODUCTWIN64)">
-        <File Id="fil206829A74DFF7880F64BE9D5C35CFF80" KeyPath="yes" Source="..\bin\$(env.PRODUCTARCH)\dispsvc.exe" />
+        <File Id="fil206829A74DFF7880F64BE9D5C35CFF80" KeyPath="yes" Source="..\bin\$(env.PRODUCTARCH)\dispsvc.exe">
+          <TypeLib Id="{3E3A1F87-3E49-4E02-B723-EDBC0C663479}" Description="AtYourService Hello World Component 1.0 Type Library" HelpDirectory="INSTALLDIR" MajorVersion="1" MinorVersion="0" Language="0">
+            <Interface Id="{7ECC209B-9817-47C7-A20F-BFE525B1D2B7}" Name="IHelloWorld" ProxyStubClassId32="{00020424-0000-0000-C000-000000000046}" />
+          </TypeLib>
+        </File>
         <RegistryValue Id="reg852b816e97fc40558f6085a82a262f7e" Root="HKCR" Key="CLSID\{D52EC170-7501-421A-B4C0-0F88988D323A}" Name="AppID" Value="{FCE27BC8-8959-4F8D-83C1-0C63E43677E0}" Type="string" Action="write" />
         <RegistryValue Id="regc20ac5fc9e314d5cbf17c7fa18fd6e09" Root="HKCR" Key="RhubarbGeekNz.AtYourService\CLSID" Value="{D52EC170-7501-421A-B4C0-0F88988D323A}" Type="string" Action="write" />
         <RegistryValue Id="reg852b816e97fc40558f35345930495434" Root="HKCR" Key="AppID\{FCE27BC8-8959-4F8D-83C1-0C63E43677E0}" Name="LocalService" Value="AtYourService" Type="string" Action="write" />

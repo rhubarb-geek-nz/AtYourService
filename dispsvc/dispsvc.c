@@ -380,7 +380,7 @@ static void WINAPI ServiceMain(DWORD argc, LPWSTR* argv)
 	gSvcStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
 	gSvcStatus.dwServiceSpecificExitCode = 0;
 
-	gSvcStatusHandle = RegisterServiceCtrlHandler(ServiceName, ServiceCtrlHandler);
+	gSvcStatusHandle = RegisterServiceCtrlHandlerW(ServiceName, ServiceCtrlHandler);
 
 	__try
 	{
@@ -448,5 +448,5 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		return 10;
 	}
 
-	return StartServiceCtrlDispatcher(DispatchTable) ? 0 : GetLastError();
+	return StartServiceCtrlDispatcherW(DispatchTable) ? 0 : GetLastError();
 }
