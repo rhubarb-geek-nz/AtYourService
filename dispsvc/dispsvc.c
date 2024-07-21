@@ -6,12 +6,12 @@
 #include<windows.h>
 #include <dispsvc_h.h>
 
-static DWORD tidMain;
 static OLECHAR globalModuleFileName[260];
 static LONG serverLockCount;
 static OLECHAR ServiceName[] = L"AtYourService";
 static SERVICE_STATUS gSvcStatus;
 static SERVICE_STATUS_HANDLE gSvcStatusHandle;
+static HANDLE ghSvcStopEvent = NULL;
 
 typedef struct CHelloWorldData
 {
@@ -352,14 +352,16 @@ static VOID ReportSvcStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD d
 
 static void WINAPI ServiceCtrlHandler(DWORD dwCtrl)
 {
+	HANDLE hEvent = ghSvcStopEvent;
+
 	switch (dwCtrl)
 	{
 	case SERVICE_CONTROL_STOP:
-		if (tidMain)
+		if (hEvent)
 		{
 			ReportSvcStatus(SERVICE_STOP_PENDING, NO_ERROR, 0);
 
-			PostThreadMessageW(tidMain, WM_QUIT, 0, 0);
+			SetEvent(hEvent);
 		}
 		break;
 
@@ -373,7 +375,7 @@ static void WINAPI ServiceCtrlHandler(DWORD dwCtrl)
 
 static void WINAPI ServiceMain(DWORD argc, LPWSTR* argv)
 {
-	tidMain = GetCurrentThreadId();
+	ghSvcStopEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	gSvcStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
 	gSvcStatus.dwServiceSpecificExitCode = 0;
@@ -408,15 +410,8 @@ static void WINAPI ServiceMain(DWORD argc, LPWSTR* argv)
 					{
 						__try
 						{
-							MSG msg;
-
 							ReportSvcStatus(SERVICE_RUNNING, NO_ERROR, 0);
-
-							while (GetMessageW(&msg, 0, 0, 0))
-							{
-								TranslateMessage(&msg);
-								DispatchMessageW(&msg);
-							}
+							WaitForSingleObject(ghSvcStopEvent, INFINITE);
 						}
 						__finally
 						{
@@ -433,8 +428,10 @@ static void WINAPI ServiceMain(DWORD argc, LPWSTR* argv)
 	}
 	__finally
 	{
-		tidMain = 0;
+		HANDLE hEvent = ghSvcStopEvent;
+		ghSvcStopEvent = NULL;
 		ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
+		CloseHandle(hEvent);
 	}
 }
 
