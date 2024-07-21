@@ -4,19 +4,16 @@
  ****/
 
 using System;
-using System.Reflection;
 
-namespace dispnet
+namespace RhubarbGeekNz.AtYourService
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            object helloWorld = Activator.CreateInstance(Type.GetTypeFromProgID("RhubarbGeekNz.AtYourService"));
+            IHelloWorld helloWorld = Activator.CreateInstance(Type.GetTypeFromProgID("RhubarbGeekNz.AtYourService")) as IHelloWorld;
 
-            int hint = args.Length == 0 ? 1 : Int32.Parse(args[0]);
-
-            object result = helloWorld.GetType().InvokeMember("GetMessage", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod, null, helloWorld, new object[] { hint });
+            string result = helloWorld.GetMessage(args.Length == 0 ? 1 : Int32.Parse(args[0]));
 
             Console.WriteLine($"{result}");
         }
