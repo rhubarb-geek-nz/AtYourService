@@ -26,9 +26,17 @@ Add-Type -TypeDefinition @"
 				IntPtr pAuthInfo,
 				uint dwCapabilities);
 
-			public static void SetSecurity(object dispatch)
+			public static void SetSecurity(object proxy)
 			{
-				CoSetProxyBlanket(Marshal.GetIDispatchForObject(dispatch), uint.MaxValue, 0, null, 4, 3, IntPtr.Zero, 0);
+				IntPtr dispatch = Marshal.GetIDispatchForObject(proxy);
+				try
+				{
+					CoSetProxyBlanket(dispatch, uint.MaxValue, 0, null, 4, 3, IntPtr.Zero, 0);
+				}
+				finally
+				{
+					Marshal.Release(dispatch);
+				}
 			}
 		}
 	}
