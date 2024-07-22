@@ -4,7 +4,7 @@
 param(
 	$ProgID = 'RhubarbGeekNz.AtYourService',
 	$Method = 'GetMessage',
-	$Hint=@(1, 2, 3, 4, 5)
+	$Hint = @(1, 2, 3, 4, 5)
 )
 
 Add-Type -TypeDefinition @"
