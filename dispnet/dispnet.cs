@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace RhubarbGeekNz.AtYourService
+namespace RhubarbGeekNzAtYourService
 {
     internal class Program
     {
@@ -15,7 +15,7 @@ namespace RhubarbGeekNz.AtYourService
         {
             CoInitializeSecurity(IntPtr.Zero, -1, IntPtr.Zero, IntPtr.Zero, RpcAuthnLevel.Pkt, RpcImpLevel.Impersonate, IntPtr.Zero, EoAuthnCap.None, IntPtr.Zero);
 
-            IHelloWorld helloWorld = Activator.CreateInstance(Type.GetTypeFromProgID("RhubarbGeekNz.AtYourService")) as IHelloWorld;
+            IHelloWorld helloWorld = Activator.CreateInstance(Type.GetTypeFromProgID("RhubarbGeekNz.AtYourService", true)) as IHelloWorld;
 
             foreach (int hint in args.Length == 0 ? new int[] { 1, 2, 3, 4, 5 } : args.Select(t => Int32.Parse(t)).ToArray())
             {
@@ -64,6 +64,6 @@ namespace RhubarbGeekNz.AtYourService
         }
 
         [DllImport("ole32.dll", PreserveSig = false)]
-        public static extern int CoInitializeSecurity(IntPtr pVoid, int cAuthSvc, IntPtr asAuthSvc, IntPtr pReserved1, RpcAuthnLevel level, RpcImpLevel impers, IntPtr pAuthList, EoAuthnCap dwCapabilities, IntPtr pReserved3);
+        public static extern void CoInitializeSecurity(IntPtr pVoid, int cAuthSvc, IntPtr asAuthSvc, IntPtr pReserved1, RpcAuthnLevel level, RpcImpLevel impers, IntPtr pAuthList, EoAuthnCap dwCapabilities, IntPtr pReserved3);
     }
 }
