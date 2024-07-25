@@ -15,7 +15,7 @@ namespace RhubarbGeekNzAtYourService
         {
             CoInitializeSecurity(IntPtr.Zero, -1, IntPtr.Zero, IntPtr.Zero, RpcAuthnLevel.Pkt, RpcImpLevel.Impersonate, IntPtr.Zero, EoAuthnCap.None, IntPtr.Zero);
 
-            IHelloWorld helloWorld = Activator.CreateInstance(Type.GetTypeFromProgID("RhubarbGeekNz.AtYourService", true)) as IHelloWorld;
+            IHelloWorld helloWorld = new CHelloWorld();
 
             foreach (int hint in args.Length == 0 ? new int[] { 1, 2, 3, 4, 5 } : args.Select(t => Int32.Parse(t)).ToArray())
             {
