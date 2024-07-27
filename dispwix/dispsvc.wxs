@@ -17,15 +17,17 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="$(env.PRODUCTPROGFILES)">
         <Directory Id="COMPANYDIR" Name="rhubarb-geek-nz">
-          <Directory Id="INSTALLDIR" Name="AtYourService" />
+          <Directory Id="INSTALLDIR" Name="AtYourService">
+            <Directory Id="INSTALLDIRBIN" Name="$(env.PRODUCTARCH)" />
+          </Directory>
         </Directory>
       </Directory>
     </Directory>
   </Fragment>
   <Fragment>
     <ComponentGroup Id="ProductComponents">
-      <Component Id="cmp49644F99A8DC013BD2FA39270E26C76C" Guid="*" Directory="INSTALLDIR" Win64="$(env.PRODUCTWIN64)">
-        <File Id="fil206829A74DFF7880F64BE9D5C35CFF80" KeyPath="yes" Source="..\bin\$(env.PRODUCTARCH)\dispsvc.exe">
+      <Component Id="cmp49644F99A8DC013BD2FA39270E26C76C" Guid="*" Directory="INSTALLDIRBIN" Win64="$(env.PRODUCTWIN64)">
+        <File Id="fil206829A74DFF7880F64BE9D5C35CFF80" KeyPath="yes" Source="..\bin\$(env.PRODUCTARCH)\RhubarbGeekNzAtYourService.exe">
           <TypeLib Id="{3E3A1F87-3E49-4E02-B723-EDBC0C663479}" Description="AtYourService Hello World Component 1.0 Type Library" HelpDirectory="INSTALLDIR" MajorVersion="1" MinorVersion="0" Language="0">
             <Interface Id="{7ECC209B-9817-47C7-A20F-BFE525B1D2B7}" Name="IHelloWorld" ProxyStubClassId32="{00020424-0000-0000-C000-000000000046}" />
           </TypeLib>
