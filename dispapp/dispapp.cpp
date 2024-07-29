@@ -13,54 +13,46 @@ int main(int argc, char** argv)
 
 	if (SUCCEEDED(hr))
 	{
-		hr = CoInitializeSecurity(NULL,
-			-1,
-			NULL,
-			NULL,
-			RPC_C_AUTHN_LEVEL_PKT,
-			RPC_C_IMP_LEVEL_IMPERSONATE,
-			NULL,
-			EOAC_NONE,
-			NULL);
+		BSTR app = SysAllocString(L"RhubarbGeekNz.AtYourService");
+		CLSID clsid;
+
+		hr = CLSIDFromProgID(app, &clsid);
+
+		SysFreeString(app);
 
 		if (SUCCEEDED(hr))
 		{
-			BSTR app = SysAllocString(L"RhubarbGeekNz.AtYourService");
-			CLSID clsid;
+			IHelloWorld* helloWorld = NULL;
 
-			hr = CLSIDFromProgID(app, &clsid);
-
-			SysFreeString(app);
+			hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IHelloWorld, (void**)&helloWorld);
 
 			if (SUCCEEDED(hr))
 			{
-				IHelloWorld* helloWorld = NULL;
+				hr = CoSetProxyBlanket(helloWorld, RPC_C_AUTHN_DEFAULT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_PKT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
+			}
 
-				hr = CoCreateInstance(clsid, NULL, CLSCTX_LOCAL_SERVER, IID_IHelloWorld, (void**)&helloWorld);
+			if (SUCCEEDED(hr))
+			{
+				int hint = argc > 1 ? atoi(argv[1]) : 1;
+				BSTR result = NULL;
+
+				hr = helloWorld->GetMessage(hint, &result);
 
 				if (SUCCEEDED(hr))
 				{
-					int hint = argc > 1 ? atoi(argv[1]) : 1;
-					BSTR result = NULL;
+					printf("%S\n", result);
 
-					hr = helloWorld->GetMessage(hint, &result);
-
-					if (SUCCEEDED(hr))
+					if (result)
 					{
-						printf("%S\n", result);
-
-						if (result)
-						{
-							SysFreeString(result);
-						}
+						SysFreeString(result);
 					}
-
-					helloWorld->Release();
 				}
-			}
 
-			CoUninitialize();
+				helloWorld->Release();
+			}
 		}
+
+		CoUninitialize();
 	}
 
 	if (FAILED(hr))
